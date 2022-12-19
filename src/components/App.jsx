@@ -1,28 +1,56 @@
-import { GlobalStyleComponent } from 'styles/GlobalStyles';
-import { Container } from './Container/Container.styled';
-import user from './Profile/user.json';
-import Profile from './Profile/Profile';
-import data from './Statistics/data.json';
-import Statistics from './Statistics/Statistics';
-import friends from './FriendList/friends.json';
-import FriendList from './FriendList/FriendList';
-import transactions from './TransactionHistory/transactions.json';
-import TransactionHistory from './TransactionHistory/TransactionHistory';
+import { Component } from 'react';
 
-export const App = () => {
-  return (
-    <Container>
-      <Profile
-        username={user.username}
-        tag={user.tag}
-        location={user.location}
-        avatar={user.avatar}
-        stats={user.stats}
-      />
-      <Statistics title="Upload stats" stats={data} />
-      <FriendList friends={friends} />
-      <TransactionHistory transactions={transactions} />
-      <GlobalStyleComponent />
-    </Container>
-  );
-};
+import { GlobalStyleComponent } from 'styles/GlobalStyles';
+import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
+import Statistics from './Statistics/Statistics';
+import Section from './Section/Section';
+import Notification from './Notification/Notification';
+import { Container } from './Container/Container.styled';
+
+export default class App extends Component {
+  state = {
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  };
+
+  countTotalFeedback = () => {
+    const { good, neutral, bad } = this.state;
+    return good + neutral + bad;
+  };
+
+  countPositiveFeedbackPercentage = () => {
+    const { good } = this.state;
+    return Math.round((good / this.countTotalFeedback()) * 100);
+  };
+
+  feedbackButtonClick = opt => {
+    this.setState(prevState => ({
+      [opt]: prevState[opt] + 1,
+    }));
+  };
+
+  render() {
+    const total = this.countTotalFeedback();
+    const positive = this.countPositiveFeedbackPercentage();
+    return (
+      <Container>
+        <Section title="Please leave feedback">
+          <FeedbackOptions
+            options={Object.keys(this.state)}
+            handleClick={this.feedbackButtonClick}
+          />
+        </Section>
+        <Section title="Statistics">
+          {this.countTotalFeedback() ? (
+            <Statistics count={this.state} total={total} positive={positive} />
+          ) : (
+            <Notification message="There is no feedback" />
+          )}
+        </Section>
+
+        <GlobalStyleComponent />
+      </Container>
+    );
+  }
+}
