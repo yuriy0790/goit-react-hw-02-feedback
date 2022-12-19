@@ -1,4 +1,4 @@
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import styles from './FeedbackOptions.module.css';
 
 const FeedbackOptions = ({ options, handleClick }) => {
@@ -14,3 +14,8 @@ const FeedbackOptions = ({ options, handleClick }) => {
   ));
 };
 export default FeedbackOptions;
+
+FeedbackOptions.propTypes = {
+  options: PropTypes.array.isRequired,
+  handleClick: PropTypes.func.isRequired,
+};
